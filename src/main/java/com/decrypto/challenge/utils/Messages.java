@@ -22,4 +22,10 @@ public final class Messages {
     public static final String DUPLICATED_CLIENT_MARKET = "Client is already in this market";
 
   public static final String EXCEPTION_NOT_HANDLED ="Exception not handled: " ;
+
+  public static final String OPENAPI_OK = "Successfully";
+  public static final String OPENAPI_INTERNAL_ERROR = "Internal server error";
+  public static final String OPENAPI_NOT_FOUND = "Resource not found";
+  public static final String OPENAPI_NOT_HANDLED = "Exception not handled" ;
+  public static final String OPENAPI_BAD_REQUEST = "Bad request" ;
 }

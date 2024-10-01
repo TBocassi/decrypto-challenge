@@ -1,6 +1,7 @@
 package com.decrypto.challenge.controllers.dtos.request;
 
 import com.decrypto.challenge.utils.Messages;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -16,5 +17,6 @@ public class SaveClientRequest {
   @NotNull(message = Messages.DESCRIPTION_NOT_NULL)
   @Size(min = 5 , message = Messages.DESCRIPTION_MIN_CHAR)
   @Pattern(regexp = ".*[a-zA-Z].*", message = Messages.DESCRIPTION_NOT_ALPHABETIC)
+  @Schema(description = "client description", example = "Samsung")
   private String description;
 }
