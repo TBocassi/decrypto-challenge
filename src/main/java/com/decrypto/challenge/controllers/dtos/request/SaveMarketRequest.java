@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class SaveMarketRequest {
   
   @NotNull(message = Messages.CODE_NOT_NULL)
-  @Pattern(regexp = "^[A-Z0-9]{2,4}$", message = Messages.CODE_BAD_FORMAT)
+  @Pattern(regexp = "^[A-Z0-9]{2,5}$", message = Messages.CODE_BAD_FORMAT)
   private String code;
   
   @NotNull(message = Messages.DESCRIPTION_NOT_NULL)

@@ -55,7 +55,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public Client getClientById(final Long clientId) {
     return clientRepository.findById(clientId)
-               .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND));
+               .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId ));
   }
   
   @Override
@@ -73,7 +73,7 @@ public class ClientServiceImpl implements ClientService {
   public Long deleteClient(final Long clientId) {
     
     Client client =clientRepository.findById(clientId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId));
     clientRepository.delete(client);
     return client.getId();
   }
@@ -81,7 +81,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public Client updateClient(final Long clientId, final UpdateClientRequest updateClientRequest) {
     Client client =clientRepository.findById(clientId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId));
     if (updateClientRequest.getDescription() != null){
       client.setDescription(updateClientRequest.getDescription());
     }
@@ -94,9 +94,9 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public Void addMarketClient(Long clientId, AddMarketClientRequest addMarketClientRequest) {
     Client client = clientRepository.findById(clientId)
-            .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId));
     Market market = marketRepository.findByCodeAndCountry(addMarketClientRequest.getCode(),addMarketClientRequest.getCountry())
-            .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+            .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + "(" + addMarketClientRequest.getCode() + ", " + addMarketClientRequest.getCountry() +")" ));
     ClientMarketKey key = new ClientMarketKey(client.getId(), market.getId());
     Optional<ClientMarket> optionalClientMarket = clientMarketRepository.findById(key);
     if (optionalClientMarket.isPresent()){

@@ -41,7 +41,7 @@ public class MarketServiceImpl implements MarketService {
   @Override
   public Market getMarketById(final Long marketId) {
     return marketRepository.findById(marketId)
-               .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+               .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
   }
   
   @Override
@@ -62,7 +62,7 @@ public class MarketServiceImpl implements MarketService {
   public Long deleteMarket(final Long marketId) {
     
     Market market =marketRepository.findById(marketId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
     marketRepository.delete(market);
     return market.getId();
   }
@@ -70,7 +70,7 @@ public class MarketServiceImpl implements MarketService {
   @Override
   public Market updateMarket(final Long marketId, final UpdateMarketRequest updateMarketRequest) {
     Market market =marketRepository.findById(marketId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
     if (updateMarketRequest.getDescription() != null){
       market.setDescription(updateMarketRequest.getDescription());
     }
