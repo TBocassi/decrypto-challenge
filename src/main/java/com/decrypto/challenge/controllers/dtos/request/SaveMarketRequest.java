@@ -23,6 +23,6 @@ public class SaveMarketRequest {
   private String description;
   
   @NotNull(message = Messages.COUNTRY_NOT_NULL)
-  @Pattern(regexp = "^[a-zA-Z]+$", message = Messages.COUNTRY_NOT_ALPHABETIC)
+  @Pattern(regexp = "^[a-zA-Z\\s]+$", message = Messages.DESCRIPTION_NOT_ALPHABETIC)
   private String country;
 }
