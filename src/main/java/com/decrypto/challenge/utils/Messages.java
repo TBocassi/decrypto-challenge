@@ -17,4 +17,6 @@ public final class Messages {
   
   public static final String COUNTRY_NOT_NULL = "Country can´t be null" ;
   public static final String COUNTRY_NOT_ALPHABETIC = "Country must be alphabetic";
+  public static final String DUPLICATED_CLIENT = "Client already exist. Client: ";
+    public static final String DUPLICATED_CLIENT_MARKET = "Client is already in this market";
 }

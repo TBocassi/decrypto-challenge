@@ -31,8 +31,16 @@ public class ExceptionHandler {
                                      .collect(Collectors.toList());
     
     String errorResponse = String.join("; ", errorMessages);
-  
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
-  
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateClientException.class)
+  public ResponseEntity<String> handleDuplicateClientException(DuplicateClientException exception){
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+  @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateClientMarketException.class)
+  public ResponseEntity<String> handleDuplicateClientMarketExceptionException(DuplicateClientMarketException exception){
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
 }

@@ -6,12 +6,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @IdClass(ClientMarketKey.class)
 @Table(name = "client_market")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ClientMarket{
   
   @Id
@@ -21,13 +28,5 @@ public class ClientMarket{
   @Id
   @Column(name = "market_id")
   private Long marketId;
-  
-  private String createdBy;
-  
-  private OffsetDateTime createdDate;
-  
-  private String updatedBy;
-  
-  private OffsetDateTime updatedDate;
-  
+
 }
