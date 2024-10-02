@@ -109,6 +109,7 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public StatsResponse getStats() {
+
     StatsResponse statsResponse = new StatsResponse(new ArrayList<>());
     List<Country> countryList = countryRepository.findAll();
     for(Country country : countryList){
@@ -129,13 +130,16 @@ public class ClientServiceImpl implements ClientService {
   }
 
   private BigDecimal getPercentage(Market market) {
-
-    BigDecimal totalClientMarket = new BigDecimal(clientMarketRepository.count()) ;
-    BigDecimal actualMarketCount = new BigDecimal(clientMarketRepository.countByMarketId(market.getId()));
-    BigDecimal percentage = actualMarketCount
-            .multiply(BigDecimal.valueOf(100))
-            .divide(totalClientMarket, 2, RoundingMode.HALF_UP);
-    return percentage;
+    if (clientMarketRepository.count() == 0) {
+      return BigDecimal.valueOf(0);
+    } else {
+      BigDecimal totalClientMarket = new BigDecimal(clientMarketRepository.count());
+      BigDecimal actualMarketCount = new BigDecimal(clientMarketRepository.countByMarketId(market.getId()));
+      BigDecimal percentage = actualMarketCount
+              .multiply(BigDecimal.valueOf(100))
+              .divide(totalClientMarket, 2, RoundingMode.HALF_UP);
+      return percentage;
+    }
   }
 
 }
