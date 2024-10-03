@@ -1,5 +1,7 @@
 package com.decrypto.challenge.services.impl;
 
+import com.decrypto.challenge.entities.ClientMarket;
+import com.decrypto.challenge.repositories.ClientMarketRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,9 +42,13 @@ class MarketServiceImplTest {
     private CountryRepository countryRepository;
 
     @Mock
+    private ClientMarketRepository clientMarketRepository;
+
+    @Mock
     private MarketMapper marketMapper;
 
     private Market market;
+    private ClientMarket clientMarket;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +57,10 @@ class MarketServiceImplTest {
         market.setId(1L);
         market.setDescription("Test Market");
         market.setCountry("Test Country");
+
+        clientMarket = new ClientMarket();
+        clientMarket.setMarketId(1l);
+        clientMarket.setClientId(1l);
     }
 
     @Test
@@ -125,6 +135,7 @@ class MarketServiceImplTest {
     @Test
     void deleteMarket_Success() {
         when(marketRepository.findById(1L)).thenReturn(Optional.of(market));
+        when(clientMarketRepository.findAllByMarketId(anyLong())).thenReturn(List.of(clientMarket));
 
         Long deletedId = marketService.deleteMarket(1L);
 

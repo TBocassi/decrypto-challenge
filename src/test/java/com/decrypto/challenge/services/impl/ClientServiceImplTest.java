@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +59,7 @@ class ClientServiceImplTest {
     private SaveClientRequest saveClientRequest;
     private UpdateClientRequest updateClientRequest;
     private AddMarketClientRequest addMarketClientRequest;
+    private ClientMarket clientMarket;
 
     @BeforeEach
     void setUp() {
@@ -76,6 +78,10 @@ class ClientServiceImplTest {
         addMarketClientRequest = new AddMarketClientRequest();
         addMarketClientRequest.setCode("CODE");
         addMarketClientRequest.setCountry("Test Country");
+
+        clientMarket = new ClientMarket();
+        clientMarket.setMarketId(1l);
+        clientMarket.setClientId(1l);
     }
 
     @Test
@@ -137,6 +143,7 @@ class ClientServiceImplTest {
     @Test
     void deleteClient_Success() {
         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientMarketRepository.findAllByClientId(anyLong())).thenReturn(List.of(clientMarket));
 
         Long deletedId = clientService.deleteClient(1L);
 
@@ -147,6 +154,7 @@ class ClientServiceImplTest {
     @Test
     void deleteClient_NotFound() {
         when(clientRepository.findById(1L)).thenReturn(Optional.empty());
+
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             clientService.deleteClient(1L);
@@ -270,4 +278,37 @@ class ClientServiceImplTest {
         assertEquals(new BigDecimal("50.00"), marketInfo.getPercentage());
     }
 
+    @Test
+    void getStats_percentage0_Success() {
+
+        Country country = new Country();
+        country.setCountryName("Test Country");
+
+        Market market = new Market();
+        market.setId(1L);
+        market.setCode("CODE");
+
+        ClientMarket clientMarket = new ClientMarket();
+        clientMarket.setMarketId(market.getId());
+
+
+        when(countryRepository.findAll()).thenReturn(Collections.singletonList(country));
+        when(marketRepository.findByCountry(country.getCountryName())).thenReturn(Collections.singletonList(market));
+        when(clientMarketRepository.count()).thenReturn(0L);
+        when(clientMarketRepository.countByMarketId(market.getId())).thenReturn(5L);
+
+        StatsResponse statsResponse = clientService.getStats();
+
+
+        assertNotNull(statsResponse);
+        assertEquals(1, statsResponse.getCountryStats().size());
+
+        CountryStats countryStats = statsResponse.getCountryStats().get(0);
+        assertEquals("Test Country", countryStats.getCountry());
+        assertEquals(1, countryStats.getMarketInfos().size());
+
+        MarketInfo marketInfo = countryStats.getMarketInfos().get(0);
+        assertEquals("CODE", marketInfo.getMarketCode());
+        assertEquals(new BigDecimal("0"), marketInfo.getPercentage());
+    }
 }

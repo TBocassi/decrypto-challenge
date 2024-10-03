@@ -75,6 +75,10 @@ public class ClientServiceImpl implements ClientService {
     Client client =clientRepository.findById(clientId)
                        .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId));
     clientRepository.delete(client);
+    List<ClientMarket> clientMarkets = clientMarketRepository.findAllByClientId(clientId);
+    for (ClientMarket clientMarket :clientMarkets){
+      clientMarketRepository.delete(clientMarket);
+    }
     return client.getId();
   }
   
