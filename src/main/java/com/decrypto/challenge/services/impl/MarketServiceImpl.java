@@ -3,11 +3,13 @@ package com.decrypto.challenge.services.impl;
 import com.decrypto.challenge.controllers.dtos.request.SaveMarketRequest;
 import com.decrypto.challenge.controllers.dtos.request.UpdateMarketRequest;
 import com.decrypto.challenge.controllers.dtos.response.MarketResponse;
+import com.decrypto.challenge.entities.ClientMarket;
 import com.decrypto.challenge.entities.Country;
 import com.decrypto.challenge.entities.Market;
 import com.decrypto.challenge.exceptions.CountryNotAllowedException;
 import com.decrypto.challenge.exceptions.ResourceNotFoundException;
 import com.decrypto.challenge.mappers.MarketMapper;
+import com.decrypto.challenge.repositories.ClientMarketRepository;
 import com.decrypto.challenge.repositories.CountryRepository;
 import com.decrypto.challenge.repositories.MarketRepository;
 import com.decrypto.challenge.services.MarketService;
@@ -30,7 +32,10 @@ public class MarketServiceImpl implements MarketService {
   
   @Autowired
   private CountryRepository countryRepository;
-  
+
+  @Autowired
+  private ClientMarketRepository clientMarketRepository;
+
   @Override
   public List<MarketResponse> getAllMarkets() {
     return marketRepository.findAll().stream()
@@ -41,7 +46,7 @@ public class MarketServiceImpl implements MarketService {
   @Override
   public Market getMarketById(final Long marketId) {
     return marketRepository.findById(marketId)
-               .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+               .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
   }
   
   @Override
@@ -62,15 +67,19 @@ public class MarketServiceImpl implements MarketService {
   public Long deleteMarket(final Long marketId) {
     
     Market market =marketRepository.findById(marketId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
     marketRepository.delete(market);
+    List<ClientMarket> clientMarkets = clientMarketRepository.findAllByMarketId(marketId);
+    for (ClientMarket clientMarket :clientMarkets){
+      clientMarketRepository.delete(clientMarket);
+    }
     return market.getId();
   }
   
   @Override
   public Market updateMarket(final Long marketId, final UpdateMarketRequest updateMarketRequest) {
     Market market =marketRepository.findById(marketId)
-                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND));
+                       .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
     if (updateMarketRequest.getDescription() != null){
       market.setDescription(updateMarketRequest.getDescription());
     }
