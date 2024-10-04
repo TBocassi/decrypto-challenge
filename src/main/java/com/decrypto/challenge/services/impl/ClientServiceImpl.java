@@ -16,6 +16,7 @@ import com.decrypto.challenge.repositories.ClientMarketRepository;
 import com.decrypto.challenge.repositories.ClientRepository;
 import com.decrypto.challenge.repositories.CountryRepository;
 import com.decrypto.challenge.repositories.MarketRepository;
+import com.decrypto.challenge.security.components.JwtUtil;
 import com.decrypto.challenge.services.ClientService;
 import com.decrypto.challenge.utils.Messages;
 
@@ -44,6 +45,9 @@ public class ClientServiceImpl implements ClientService {
 
   @Autowired
   private CountryRepository countryRepository;
+
+  @Autowired
+  private JwtUtil jwtUtil;
   
   @Override
   public List<ClientResponse> getAllClients() {
@@ -59,16 +63,16 @@ public class ClientServiceImpl implements ClientService {
   }
   
   @Override
-  public Client saveClient(final SaveClientRequest saveClientRequest) {
+  public Client saveClient(final SaveClientRequest saveClientRequest , String token) {
    Optional<Client> optionalClient = clientRepository.findByDescription(saveClientRequest.getDescription());
    if (optionalClient.isEmpty()) {
      Client client = ClientMapper.INSTANCE.saveClientRequestToClient(saveClientRequest);
-     client.setCreatedBy("creator_user");
+     client.setCreatedBy(jwtUtil.extractUsername(token.substring(7)));
      client.setCreatedDate(OffsetDateTime.now(ZoneOffset.ofHours(-3)));
      return clientRepository.save(client);
    } else throw new DuplicateClientException(Messages.DUPLICATED_CLIENT + saveClientRequest.getDescription());
   }
-  
+
   @Override
   public Long deleteClient(final Long clientId) {
     
@@ -83,13 +87,13 @@ public class ClientServiceImpl implements ClientService {
   }
   
   @Override
-  public Client updateClient(final Long clientId, final UpdateClientRequest updateClientRequest) {
+  public Client updateClient(final Long clientId, final UpdateClientRequest updateClientRequest ,String token) {
     Client client =clientRepository.findById(clientId)
                        .orElseThrow(() -> new ResourceNotFoundException(Messages.CLIENT_NOT_FOUND + clientId));
     if (updateClientRequest.getDescription() != null){
       client.setDescription(updateClientRequest.getDescription());
     }
-    client.setUpdatedBy("updater_user");
+    client.setUpdatedBy(jwtUtil.extractUsername(token.substring(7)));
     client.setUpdatedDate(OffsetDateTime.now(ZoneOffset.ofHours(-3)));
     clientRepository.save(client);
     return client;

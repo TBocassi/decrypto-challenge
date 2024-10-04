@@ -17,7 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 public class ExceptionHandler {
 
   @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleAllExceptions (CountryNotAllowedException exception ){
+  public ResponseEntity<ErrorResponse> handleAllExceptions (Exception exception ){
     List<String> details = new ArrayList<>();
     details.add(exception.getMessage());
     ErrorResponse error = new ErrorResponse(Messages.EXCEPTION_NOT_HANDLED + exception.getClass().getName(), details);
@@ -61,7 +61,31 @@ public class ExceptionHandler {
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
   @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateClientMarketException.class)
-  public ResponseEntity<ErrorResponse> handleDuplicateClientMarketExceptionException(DuplicateClientMarketException exception){
+  public ResponseEntity<ErrorResponse> handleDuplicateClientMarketException(DuplicateClientMarketException exception){
+    List<String> details = new ArrayList<>();
+    details.add(exception.getMessage());
+    ErrorResponse error = new ErrorResponse(exception.getClass().getName(), details);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateUserException.class)
+  public ResponseEntity<ErrorResponse> handleDuplicateUserException(DuplicateUserException exception){
+    List<String> details = new ArrayList<>();
+    details.add(exception.getMessage());
+    ErrorResponse error = new ErrorResponse(exception.getClass().getName(), details);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException exception){
+    List<String> details = new ArrayList<>();
+    details.add(exception.getMessage());
+    ErrorResponse error = new ErrorResponse(exception.getClass().getName(), details);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateMarketException.class)
+  public ResponseEntity<ErrorResponse> handleDuplicateMarketException(DuplicateMarketException exception){
     List<String> details = new ArrayList<>();
     details.add(exception.getMessage());
     ErrorResponse error = new ErrorResponse(exception.getClass().getName(), details);

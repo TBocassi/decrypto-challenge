@@ -14,9 +14,9 @@ public interface MarketService {
   
   Market getMarketById(Long marketId);
   
-  Market saveMarket(SaveMarketRequest saveMarketRequest);
+  Market saveMarket(SaveMarketRequest saveMarketRequest,String token);
   
   Long deleteMarket(Long marketId);
   
-  Market updateMarket(Long marketId, UpdateMarketRequest updateMarketRequest);
+  Market updateMarket(Long marketId, UpdateMarketRequest updateMarketRequest,String token);
 }

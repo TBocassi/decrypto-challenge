@@ -7,11 +7,13 @@ import com.decrypto.challenge.entities.ClientMarket;
 import com.decrypto.challenge.entities.Country;
 import com.decrypto.challenge.entities.Market;
 import com.decrypto.challenge.exceptions.CountryNotAllowedException;
+import com.decrypto.challenge.exceptions.DuplicateMarketException;
 import com.decrypto.challenge.exceptions.ResourceNotFoundException;
 import com.decrypto.challenge.mappers.MarketMapper;
 import com.decrypto.challenge.repositories.ClientMarketRepository;
 import com.decrypto.challenge.repositories.CountryRepository;
 import com.decrypto.challenge.repositories.MarketRepository;
+import com.decrypto.challenge.security.components.JwtUtil;
 import com.decrypto.challenge.services.MarketService;
 import com.decrypto.challenge.utils.Messages;
 import java.time.OffsetDateTime;
@@ -36,6 +38,9 @@ public class MarketServiceImpl implements MarketService {
   @Autowired
   private ClientMarketRepository clientMarketRepository;
 
+  @Autowired
+  private JwtUtil jwtUtil;
+
   @Override
   public List<MarketResponse> getAllMarkets() {
     return marketRepository.findAll().stream()
@@ -50,11 +55,15 @@ public class MarketServiceImpl implements MarketService {
   }
   
   @Override
-  public Market saveMarket(final SaveMarketRequest saveMarketRequest) {
+  public Market saveMarket(final SaveMarketRequest saveMarketRequest, String token) {
+    Optional<Market> optionalMarket = marketRepository.findByCodeAndCountry(saveMarketRequest.getCode(),saveMarketRequest.getCountry());
+    if (optionalMarket.isPresent()){
+      throw new DuplicateMarketException(Messages.DUPLICATED_MARKET + optionalMarket.get().getCode() + " " + optionalMarket.get().getCountry()) ;
+    }
     if (isAllowedCountry(saveMarketRequest.getCountry())){
       
       Market market = MarketMapper.INSTANCE.saveMarketRequestToMarket(saveMarketRequest);
-      market.setCreatedBy("creator_user");
+      market.setCreatedBy(jwtUtil.extractUsername(token.substring(7)));
       market.setCreatedDate(OffsetDateTime.now(ZoneOffset.ofHours(-3)));
       return marketRepository.save(market);
       
@@ -77,7 +86,7 @@ public class MarketServiceImpl implements MarketService {
   }
   
   @Override
-  public Market updateMarket(final Long marketId, final UpdateMarketRequest updateMarketRequest) {
+  public Market updateMarket(final Long marketId, final UpdateMarketRequest updateMarketRequest,String token) {
     Market market =marketRepository.findById(marketId)
                        .orElseThrow(() -> new ResourceNotFoundException(Messages.MARKET_NOT_FOUND + marketId));
     if (updateMarketRequest.getDescription() != null){
@@ -95,7 +104,7 @@ public class MarketServiceImpl implements MarketService {
       market.setCountry(updateMarketRequest.getCountry());
     }
     
-    market.setUpdatedBy("updater_user");
+    market.setUpdatedBy(jwtUtil.extractUsername(token.substring(7)));
     market.setUpdatedDate(OffsetDateTime.now(ZoneOffset.ofHours(-3)));
     marketRepository.save(market);
     return market;

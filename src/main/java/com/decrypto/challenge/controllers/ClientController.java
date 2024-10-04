@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ public class ClientController {
   @Operation(summary = "Get all clients")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
   })
   @GetMapping()
@@ -41,6 +43,7 @@ public class ClientController {
   @Operation(summary = "Get client by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
@@ -54,17 +57,19 @@ public class ClientController {
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
   })
   @PostMapping()
-  private ResponseEntity<Client> postClient(@Valid @RequestBody SaveClientRequest saveClientRequest) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(clientService.saveClient(saveClientRequest));
+  private ResponseEntity<Client> postClient(@RequestHeader(HttpHeaders.AUTHORIZATION) String token , @Valid @RequestBody SaveClientRequest saveClientRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(clientService.saveClient(saveClientRequest,token));
   }
 
   @Operation(summary = "Delete client by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
@@ -77,19 +82,21 @@ public class ClientController {
   @Operation(summary = "Update client by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
   })
   @PatchMapping("/{clientId}")
-  private ResponseEntity<Client> updateClient (@PathVariable Long clientId ,@Valid @RequestBody UpdateClientRequest updateClientRequest){
-    return ResponseEntity.ok(clientService.updateClient(clientId , updateClientRequest));
+  private ResponseEntity<Client> updateClient (@RequestHeader(HttpHeaders.AUTHORIZATION) String token ,@PathVariable Long clientId ,@Valid @RequestBody UpdateClientRequest updateClientRequest){
+    return ResponseEntity.ok(clientService.updateClient(clientId , updateClientRequest,token));
   }
 
   @Operation(summary = "Create relation between market and client")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
@@ -103,6 +110,7 @@ public class ClientController {
   @Operation(summary = "Get totalizing distribution figures of clients by country and market.")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),

@@ -14,11 +14,11 @@ public interface ClientService {
   
   Client getClientById(Long clientId);
   
-  Client saveClient(SaveClientRequest saveClientRequest);
+  Client saveClient(SaveClientRequest saveClientRequest,String token);
   
   Long deleteClient(Long clientId);
   
-  Client updateClient(Long clientId, UpdateClientRequest updateClientRequest);
+  Client updateClient(Long clientId, UpdateClientRequest updateClientRequest, String token);
 
   Void addMarketClient(Long clientId, AddMarketClientRequest addMarketClientRequest);
 
