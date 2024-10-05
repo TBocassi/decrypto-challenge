@@ -12,16 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,6 +30,7 @@ public class MarketController {
   @Operation(summary = "Get all markets")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
   })
   @GetMapping()
@@ -46,6 +41,7 @@ public class MarketController {
   @Operation(summary = "Get market by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
@@ -59,17 +55,19 @@ public class MarketController {
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
   })
   @PostMapping()
-  private ResponseEntity<Market> postMarket(@Valid @RequestBody SaveMarketRequest saveMarketRequest) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(marketService.saveMarket(saveMarketRequest));
+  private ResponseEntity<Market> postMarket(@RequestHeader(HttpHeaders.AUTHORIZATION) String token , @Valid @RequestBody SaveMarketRequest saveMarketRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(marketService.saveMarket(saveMarketRequest,token));
   }
 
   @Operation(summary = "Delete market by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
@@ -82,13 +80,14 @@ public class MarketController {
   @Operation(summary = "Update market by ID")
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = Messages.OPENAPI_OK),
+          @ApiResponse(responseCode = "403", description = Messages.OPENAPI_FORBIDDEN ),
           @ApiResponse(responseCode = "404", description = Messages.OPENAPI_NOT_FOUND ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "400", description = Messages.OPENAPI_BAD_REQUEST ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "409", description = Messages.OPENAPI_NOT_HANDLED ,content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
           @ApiResponse(responseCode = "500", description = Messages.OPENAPI_INTERNAL_ERROR , content = @Content (schema = @Schema (implementation = ErrorResponse.class))),
   })
   @PatchMapping("/{marketId}")
-  private ResponseEntity<Market> updateMarket(@PathVariable Long marketId, @Valid @RequestBody UpdateMarketRequest updateMarketRequest) {
-    return ResponseEntity.ok(marketService.updateMarket(marketId, updateMarketRequest));
+  private ResponseEntity<Market> updateMarket(@RequestHeader(HttpHeaders.AUTHORIZATION) String token ,@PathVariable Long marketId, @Valid @RequestBody UpdateMarketRequest updateMarketRequest) {
+    return ResponseEntity.ok(marketService.updateMarket(marketId, updateMarketRequest,token));
   }
 }

@@ -17,7 +17,7 @@ public class UpdateMarketRequest {
   @Schema(description = "market code", example = "MTEC")
   private String code;
 
-  @Size(min = 5 , message = Messages.DESCRIPTION_MIN_CHAR)
+  @Size(min = 5 , message = Messages.DESCRIPTION_SIZE)
   @Pattern(regexp = ".*[a-zA-Z].*", message = Messages.DESCRIPTION_NOT_ALPHABETIC)
   @Schema(description = "market description", example = "MTEC")
   private String description;
