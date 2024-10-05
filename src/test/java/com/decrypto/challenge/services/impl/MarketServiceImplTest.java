@@ -2,6 +2,7 @@ package com.decrypto.challenge.services.impl;
 
 import com.decrypto.challenge.entities.ClientMarket;
 import com.decrypto.challenge.repositories.ClientMarketRepository;
+import com.decrypto.challenge.security.components.JwtUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,6 +47,8 @@ class MarketServiceImplTest {
 
     @Mock
     private MarketMapper marketMapper;
+    @Mock
+    private JwtUtil jwtUtil;
 
     private Market market;
     private ClientMarket clientMarket;
@@ -107,11 +110,12 @@ class MarketServiceImplTest {
         allowedCountry.setCountryName("Test Country");
         allowedCountry.setId(1L);
 
+        when(jwtUtil.extractUsername(anyString())).thenReturn("username");
         when(countryRepository.findByCountryName("Test Country")).thenReturn(Optional.of(allowedCountry));
         when(marketMapper.saveMarketRequestToMarket(request)).thenReturn(market);
         when(marketRepository.save(any(Market.class))).thenReturn(market);
 
-        Market result = marketService.saveMarket(request);
+        Market result = marketService.saveMarket(request,"test-token");
 
         assertNotNull(result);
         assertEquals(market.getId(), result.getId());
@@ -126,7 +130,7 @@ class MarketServiceImplTest {
         when(countryRepository.findByCountryName("Invalid Country")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(CountryNotAllowedException.class, () -> {
-            marketService.saveMarket(request);
+            marketService.saveMarket(request,"test-token");
         });
 
         assertEquals(Messages.COUNTRY_NOT_ALLOWED + "Invalid Country", exception.getMessage());
@@ -164,8 +168,9 @@ class MarketServiceImplTest {
         when(marketRepository.findById(1L)).thenReturn(Optional.of(market));
         when(countryRepository.findByCountryName("Test Country")).thenReturn(Optional.of(new Country()));
         when(marketRepository.save(any(Market.class))).thenReturn(market);
+        when(jwtUtil.extractUsername(anyString())).thenReturn("username");
 
-        Market updatedMarket = marketService.updateMarket(1L, updateRequest);
+        Market updatedMarket = marketService.updateMarket(1L, updateRequest,"test-token");
 
         assertNotNull(updatedMarket);
         assertEquals("Updated Description", updatedMarket.getDescription());
@@ -177,7 +182,7 @@ class MarketServiceImplTest {
         when(marketRepository.findById(1L)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            marketService.updateMarket(1L, new UpdateMarketRequest());
+            marketService.updateMarket(1L, new UpdateMarketRequest(),anyString());
         });
 
         assertEquals(Messages.MARKET_NOT_FOUND + 1L, exception.getMessage());
@@ -192,7 +197,7 @@ class MarketServiceImplTest {
         when(countryRepository.findByCountryName("Invalid Country")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(CountryNotAllowedException.class, () -> {
-            marketService.updateMarket(1L, updateRequest);
+            marketService.updateMarket(1L, updateRequest,anyString());
         });
 
         assertEquals(Messages.COUNTRY_NOT_ALLOWED + "Invalid Country", exception.getMessage());

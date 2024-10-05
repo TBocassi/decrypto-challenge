@@ -11,6 +11,7 @@ import com.decrypto.challenge.security.repositories.UserRolesRepository;
 import com.decrypto.challenge.security.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +29,9 @@ public class DataLoader implements CommandLineRunner {
   @Autowired
   private UserRolesRepository userRolesRepository;
 
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   public void run(String... args) throws Exception {
     if (countryRepository.count() == 0) {
       Country countryArg = Country.builder().countryName(Constants.COUNTRY_NAME_ARGENTINA).build();
@@ -42,7 +46,7 @@ public class DataLoader implements CommandLineRunner {
       roleRepository.save(userRole);
     }
     if (userRepository.count() == 0){
-      SecurityUser securityUser = SecurityUser.builder().username(Constants.ADMIN_STRING).password(Constants.ADMIN_STRING).build();
+      SecurityUser securityUser = SecurityUser.builder().username(Constants.ADMIN_STRING).password(passwordEncoder.encode(Constants.ADMIN_STRING)).build();
       securityUser = userRepository.save(securityUser);
 
       userRolesRepository.save(UserRoles.builder().userId(securityUser.getId()).roleId(Constants.ADMIN_ROLE_ID).build());

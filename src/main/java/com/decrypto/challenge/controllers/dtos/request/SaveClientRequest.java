@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class SaveClientRequest {
   
   @NotNull(message = Messages.DESCRIPTION_NOT_NULL)
-  @Size(min = 5 , message = Messages.DESCRIPTION_MIN_CHAR)
+  @Size(min = 5 ,max = 50, message = Messages.DESCRIPTION_SIZE)
   @Pattern(regexp = ".*[a-zA-Z].*", message = Messages.DESCRIPTION_NOT_ALPHABETIC)
   @Schema(description = "client description", example = "Samsung")
   private String description;

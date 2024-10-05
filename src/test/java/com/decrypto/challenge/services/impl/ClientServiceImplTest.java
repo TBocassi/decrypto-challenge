@@ -19,6 +19,7 @@ import com.decrypto.challenge.repositories.ClientMarketRepository;
 import com.decrypto.challenge.repositories.ClientRepository;
 import com.decrypto.challenge.repositories.CountryRepository;
 import com.decrypto.challenge.repositories.MarketRepository;
+import com.decrypto.challenge.security.components.JwtUtil;
 import com.decrypto.challenge.utils.Messages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,8 @@ class ClientServiceImplTest {
 
     @Mock
     private ClientMapper clientMapper;
+    @Mock
+    private JwtUtil jwtUtil;
 
     private Client client;
     private SaveClientRequest saveClientRequest;
@@ -122,8 +125,9 @@ class ClientServiceImplTest {
         when(clientRepository.findByDescription(saveClientRequest.getDescription())).thenReturn(Optional.empty());
         when(clientMapper.saveClientRequestToClient(saveClientRequest)).thenReturn(client);
         when(clientRepository.save(any())).thenReturn(client);
+        when(jwtUtil.extractUsername(anyString())).thenReturn("username");
 
-        Client result = clientService.saveClient(saveClientRequest);
+        Client result = clientService.saveClient(saveClientRequest ,"test-token");
 
         assertNotNull(result);
         verify(clientRepository, times(1)).save(any(Client.class));
@@ -134,7 +138,7 @@ class ClientServiceImplTest {
         when(clientRepository.findByDescription(saveClientRequest.getDescription())).thenReturn(Optional.of(client));
 
         Exception exception = assertThrows(DuplicateClientException.class, () -> {
-            clientService.saveClient(saveClientRequest);
+            clientService.saveClient(saveClientRequest,anyString());
         });
 
         assertEquals(Messages.DUPLICATED_CLIENT + saveClientRequest.getDescription(), exception.getMessage());
@@ -167,8 +171,9 @@ class ClientServiceImplTest {
     void updateClient_Success() {
         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
         when(clientRepository.save(any())).thenReturn(client);
+        when(jwtUtil.extractUsername(anyString())).thenReturn("username");
 
-        Client updatedClient = clientService.updateClient(1L, updateClientRequest);
+        Client updatedClient = clientService.updateClient(1L, updateClientRequest,"test-token");
 
         assertNotNull(updatedClient);
         assertEquals("Updated Client", updatedClient.getDescription());
@@ -180,7 +185,7 @@ class ClientServiceImplTest {
         when(clientRepository.findById(1L)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            clientService.updateClient(1L, updateClientRequest);
+            clientService.updateClient(1L, updateClientRequest,anyString());
         });
 
         assertEquals(Messages.CLIENT_NOT_FOUND + 1L, exception.getMessage());

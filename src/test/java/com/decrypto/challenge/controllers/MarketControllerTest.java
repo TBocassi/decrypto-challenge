@@ -68,10 +68,11 @@ public class MarketControllerTest {
     public void testPostMarket() throws Exception {
         SaveMarketRequest request = new SaveMarketRequest("CODE","test description","test country");
         Market market = new Market(1L, "CODE","test country","test country",null,null,null,null);
-        when(marketService.saveMarket(any(SaveMarketRequest.class))).thenReturn(market);
+        when(marketService.saveMarket(any(SaveMarketRequest.class),anyString())).thenReturn(market);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/market")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token" )
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -91,10 +92,11 @@ public class MarketControllerTest {
     public void testUpdateMarket() throws Exception {
         UpdateMarketRequest request = new UpdateMarketRequest("CODE","test description","test country");
         Market market = new Market(1L, "CODE","test description","test country",null,null,null,null);
-        when(marketService.updateMarket(anyLong(), any(UpdateMarketRequest.class))).thenReturn(market);
+        when(marketService.updateMarket(anyLong(), any(UpdateMarketRequest.class),anyString())).thenReturn(market);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/market/1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token" )
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

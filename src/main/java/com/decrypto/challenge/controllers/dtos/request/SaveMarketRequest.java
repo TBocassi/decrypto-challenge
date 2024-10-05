@@ -20,7 +20,7 @@ public class SaveMarketRequest {
   private String code;
   
   @NotNull(message = Messages.DESCRIPTION_NOT_NULL)
-  @Size(min = 5 , message = Messages.DESCRIPTION_MIN_CHAR)
+  @Size(min = 5 ,max = 50, message = Messages.DESCRIPTION_SIZE)
   @Pattern(regexp = ".*[a-zA-Z].*", message = Messages.DESCRIPTION_NOT_ALPHABETIC)
   @Schema(description = "market description", example = "MTEC")
   private String description;

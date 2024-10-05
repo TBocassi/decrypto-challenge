@@ -69,15 +69,16 @@ class ClientControllerTest {
     void testPostClient() throws Exception {
         SaveClientRequest request = new SaveClientRequest( "test description");
         Client client = new Client(1L , "test description",null ,null,null,null);
-        when(clientService.saveClient(any(SaveClientRequest.class))).thenReturn(client);
+        when(clientService.saveClient(any(SaveClientRequest.class),anyString())).thenReturn(client);
 
         mockMvc.perform(post("/client")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token" )
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(clientService).saveClient(any(SaveClientRequest.class));
+        verify(clientService).saveClient(any(SaveClientRequest.class),anyString());
     }
 
     @Test
@@ -97,15 +98,16 @@ class ClientControllerTest {
         Long clientId = 1L;
         UpdateClientRequest request = new UpdateClientRequest("Updated Description");
         Client client = new Client();
-        when(clientService.updateClient(anyLong(), any(UpdateClientRequest.class))).thenReturn(client);
+        when(clientService.updateClient(anyLong(), any(UpdateClientRequest.class ) ,anyString())).thenReturn(client);
 
         mockMvc.perform(patch("/client/{clientId}", clientId)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer token" )
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(clientService).updateClient(anyLong(), any(UpdateClientRequest.class));
+        verify(clientService).updateClient(anyLong(), any(UpdateClientRequest.class),anyString());
     }
 
     @Test

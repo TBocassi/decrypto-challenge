@@ -10,7 +10,7 @@ public final class Messages {
   public static final String COUNTRY_NOT_ALLOWED = "Country not allowed. Country: ";
   
   public static final String DESCRIPTION_NOT_NULL = "Description can´t be null";
-  public static final String DESCRIPTION_MIN_CHAR = "Description must have at least 5 characters";
+  public static final String DESCRIPTION_SIZE = "Description must contain between 5 and 50 alphanumeric characters";
   public static final String DESCRIPTION_NOT_ALPHABETIC = "Description must have at least 1 alphabetic character";
   
   public static final String CODE_BAD_FORMAT = "Code must contain between 2 and 5 uppercase alphanumeric characters. Examples: UFX, AR23 ,L2, TECNO";
